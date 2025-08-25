@@ -16,6 +16,8 @@ function getPreviewImages() {
     return result;
 }
 
+
+// Функция для вычисления скидки
 function getDiscount () {
     const price = Number((document.querySelector(".price")?.textContent.match(/\d+/) || [null])[0]);
     const oldPrice = Number((document.querySelector(".price")?.textContent.match(/\d+/g) || [null, null])[1]);
@@ -26,6 +28,7 @@ function getDiscount () {
     }
 }
 
+// Функция для определения валюты
 function getCurrency(currencyMatch) {
     if (currencyMatch[0] == "₽") {
         return 'RUB';
@@ -36,6 +39,7 @@ function getCurrency(currencyMatch) {
     }
 }
 
+// Функция для получения массива рекомендованных товаров
 function getSuggested() {
     const articles = document.querySelectorAll('.suggested .items');
     const result = [];
@@ -57,6 +61,8 @@ function getSuggested() {
     return result;
 }
 
+
+// Функция для получения массива отзывов
 function getReviews() {
     const articles = document.querySelectorAll('.reviews .items');
     const result = [];
@@ -74,6 +80,7 @@ function getReviews() {
     return result;
 }
 
+// Главная функция парсера
 function parsePage() {
     return {
         meta: {"language" : document.documentElement.lang,

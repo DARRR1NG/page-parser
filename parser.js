@@ -1,17 +1,15 @@
 // @todo: напишите здесь код парсера
 function getPreviewImages() {
-    const images = document.querySelectorAll('.preview img');
+    const images = document.querySelectorAll('.preview button img');
     const result = {};
     images.forEach((img, idx) => {
         const src = img.src;
         const full = img.dataset.src;
         result[idx] = {
             alt: img.alt,
-            src: src
+            preview: src,
+            full: full
         };
-        if (full && full !== src) {
-            result[idx].full = full;
-        }
     });
     return result;
 }
@@ -48,7 +46,7 @@ function getSuggested() {
             const img = item.querySelector('img');
             const name = item.querySelector('h3').textContent.trim();
             const currency = getCurrency(item.querySelector('b')?.textContent.match(/[^\d\s]+/)[0]);
-            const price = Number((item.querySelector('b')?.textContent.match(/\d+/) || [null])[0]);
+            const price = (item.querySelector('b')?.textContent.match(/\d+/) || [null])[0];
             result.push({
                 name: name,
                 description : item.querySelector("p")?.textContent.trim() || '',
@@ -73,7 +71,7 @@ function getReviews() {
                 author : { "avatar": item.querySelector(".author img").src, "name": item.querySelector(".author span").textContent.trim() },
                 title : item.querySelector('h3').textContent.trim(),
                 description : item.querySelector("p")?.textContent.trim() || '',
-                date: item.querySelector(".author i")?.textContent.trim() || '',
+                date: ((item.querySelector(".author i")?.textContent.trim() || '').split('/')).join("."),
             });
         });
     });
@@ -91,7 +89,7 @@ function parsePage() {
                         "image" : document.querySelector('meta[property="og:image"]')?.content.trim(),
                         "type" : document.querySelector('meta[property="og:type"]')?.content.trim()}
         },
-        product: {"id" : document.querySelector('.product').dataset.iMd,
+        product: {"id" : document.querySelector('.product').dataset.id,
                 "name" : document.querySelector('h1').textContent,
                 "isLiked" : document.querySelector('.like').classList.contains('active'),
                 "images" : getPreviewImages(),
@@ -101,6 +99,7 @@ function parsePage() {
                 "price" : Number((document.querySelector(".price")?.textContent.match(/\d+/) || [null])[0]),
                 "oldPrice" : Number((document.querySelector(".price")?.textContent.match(/\d+/g) || [null, null])[1]),
                 "discount" : getDiscount(),
+                "discountPercent" : (getDiscount() * 100 / Number((document.querySelector(".price")?.textContent.match(/\d+/g) || [null, null])[1])).toFixed(2) + '%',
                 "currency" : getCurrency(document.querySelector(".price")?.textContent.match(/[^\d\s]+/)),
                 "properties": (() => {
                     const propsArr = document.querySelector('.properties').textContent
@@ -124,8 +123,8 @@ function parsePage() {
                     return clone.innerHTML.trim();
                 })(),
         },
-        suggested: [getSuggested()],
-        reviews: [getReviews()]
+        suggested: getSuggested(),
+        reviews: getReviews()
     };
 }
 
